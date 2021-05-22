@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "203952973472",
+    "project_id": "postpc-sandwiches",
+    "storage_bucket": "postpc-sandwiches.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203952973472:android:47e4ae34ab26e9ae498bc5",
+        "android_client_info": {
+          "package_name": "com.example.rachels.sandwiches"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203952973472-midu2m501kf3th75fapki7jkcr7gifdt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkD5-tumPa_Q4FvL5_Uid_XfFBBaTykCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203952973472-midu2m501kf3th75fapki7jkcr7gifdt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="new_order_screen_text_style">
+        <item name="android:fontFamily">@font/changa_one</item>
+        <item name="android:textColor">@color/charleston_green</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+</resources>

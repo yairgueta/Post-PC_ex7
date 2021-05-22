@@ -79,7 +79,7 @@
             android:progressTint="#68A63C"
             android:thumb="@color/black"
             app:layout_constraintBottom_toBottomOf="@+id/newOrder__pickles_label"
-            app:layout_constraintEnd_toStartOf="@+id/newOrder__End"
+            app:layout_constraintEnd_toStartOf="@+id/newOrder__hummus_layout"
             app:layout_constraintStart_toEndOf="@+id/newOrder__pickles_label"
             app:layout_constraintTop_toTopOf="@+id/newOrder__pickles_label" />
 
@@ -88,15 +88,16 @@
             android:id="@+id/newOrder__hummus_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/layout_border"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingStart="4dp"
             android:paddingEnd="8dp"
-            app:layout_constraintStart_toStartOf="@+id/newOrder__Start"
+            app:layout_constraintBottom_toBottomOf="@+id/newOrder__pickles_label"
             app:layout_constraintEnd_toStartOf="@id/newOrder__tahini_layout"
-            app:layout_constraintTop_toBottomOf="@+id/newOrder__pickles_label">
+            app:layout_constraintStart_toEndOf="@+id/newOrder__pickles_seekbar"
+            app:layout_constraintTop_toTopOf="@+id/newOrder__pickles_label">
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/newOrder__hummus_switch"
@@ -116,16 +117,15 @@
             android:id="@+id/newOrder__tahini_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:background="@drawable/layout_border"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingStart="4dp"
             android:paddingEnd="8dp"
-            app:layout_constraintStart_toEndOf="@+id/newOrder__hummus_layout"
-            app:layout_constraintTop_toBottomOf="@+id/newOrder__pickles_label"
+            app:layout_constraintBottom_toBottomOf="@+id/newOrder__hummus_layout"
             app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            >
+            app:layout_constraintStart_toEndOf="@+id/newOrder__hummus_layout"
+            app:layout_constraintTop_toTopOf="@+id/newOrder__hummus_layout">
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/newOrder__tahini_switch"
@@ -145,7 +145,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintBottom_toTopOf="@+id/newOrder__submit_button"
             app:layout_constraintEnd_toEndOf="@id/newOrder__End"
             app:layout_constraintStart_toStartOf="@id/newOrder__Start"
@@ -153,15 +153,14 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/newOrder__comment_text_input"
-                android:inputType="textShortMessage|textMultiLine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="0dp"
-                android:hint="Comment"
-                tools:text="@tools:sample/lorem[170]"
-                android:textSize="20sp"
                 android:gravity="top"
-            />
+                android:hint="Comment"
+                android:inputType="textShortMessage|textMultiLine"
+                android:minHeight="0dp"
+                android:textSize="20sp"
+                tools:text="@tools:sample/lorem[170]" />
 
 
         </com.google.android.material.textfield.TextInputLayout>
