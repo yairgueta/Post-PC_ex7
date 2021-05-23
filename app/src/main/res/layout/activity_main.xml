@@ -1,179 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+    android:background="#E1E2E4"
+    tools:context=".MainActivity"
+    android:layout_gravity="center"
+    >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/add_new_order_screen"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/sandwiches_bg_opa"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true"
+        android:layout_centerVertical="true"
 
-        <TextView
-            android:id="@+id/newOrder__header"
-            style="@style/new_order_screen_text_style"
-            android:layout_width="wrap_content"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="top|center"
+        >
+
+        <LinearLayout
+            android:id="@+id/add_new_order_screen_top"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:shadowColor="#88000000"
-            android:shadowDx="-3"
-            android:shadowDy="3"
-            android:shadowRadius="3"
-            android:text="Your New Order"
-            android:textSize="35sp"
-            app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            app:layout_constraintStart_toStartOf="@id/newOrder__Start"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/newOrder__name_input_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            app:layout_constraintStart_toStartOf="@+id/newOrder__Start"
-            app:layout_constraintTop_toBottomOf="@id/newOrder__header">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/newOrder__customer_name_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/CustomerNameField"
-                android:inputType="textPersonName" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/newOrder__pickles_label"
-            style="@style/new_order_screen_text_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/picklesNumberLabel"
-            app:layout_constraintStart_toStartOf="@id/newOrder__Start"
-            app:layout_constraintTop_toBottomOf="@id/newOrder__name_input_layout" />
-
-        <SeekBar
-            android:id="@+id/newOrder__pickles_seekbar"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:max="10"
-            android:progress="3"
-            android:progressTint="#68A63C"
-            android:thumb="@color/black"
-            app:layout_constraintBottom_toBottomOf="@+id/newOrder__pickles_label"
-            app:layout_constraintEnd_toStartOf="@+id/newOrder__End"
-            app:layout_constraintStart_toEndOf="@+id/newOrder__pickles_label"
-            app:layout_constraintTop_toTopOf="@+id/newOrder__pickles_label" />
-
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/newOrder__hummus_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/layout_border"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="4dp"
-            android:paddingEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@id/newOrder__tahini_layout"
-            app:layout_constraintStart_toStartOf="@+id/newOrder__Start"
-            app:layout_constraintTop_toBottomOf="@+id/newOrder__pickles_label">
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/newOrder__hummus_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            android:layout_marginHorizontal="24dp"
+            android:gravity="center|top"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
-                android:id="@+id/newOrder__hummus_label"
+                android:id="@+id/newOrder__header"
                 style="@style/new_order_screen_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hummus"
-                app:layout_constraintStart_toStartOf="parent" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                android:layout_marginTop="5dp"
+                android:shadowColor="#88000000"
+                android:shadowDx="-3"
+                android:shadowDy="3"
+                android:shadowRadius="3"
+                android:text="Your New Order"
+                android:textSize="35sp" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/newOrder__tahini_layout"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/newOrder__name_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/newOrder__customer_name_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/CustomerNameField"
+                    android:inputType="textPersonName" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_order_screen_top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/layout_border"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="4dp"
-            android:paddingEnd="8dp"
-            app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            app:layout_constraintStart_toEndOf="@+id/newOrder__hummus_layout"
-            app:layout_constraintTop_toBottomOf="@+id/newOrder__pickles_label">
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/newOrder__tahini_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            android:gravity="top|center"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/newOrder__tahini_label"
+                android:id="@+id/editOrder__header"
                 style="@style/new_order_screen_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tahini"
-                app:layout_constraintStart_toStartOf="parent" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                android:layout_marginTop="10dp"
+                android:text="Edit Your Order"
+                android:textSize="34sp" />
 
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="30dp"
-            app:layout_constraintBottom_toTopOf="@+id/newOrder__submit_button"
-            app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            app:layout_constraintStart_toStartOf="@id/newOrder__Start"
-            app:layout_constraintTop_toBottomOf="@id/newOrder__hummus_layout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/newOrder__comment_text_input"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/editOrder__info"
+                style="@style/text_info_style"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="top"
-                android:hint="Comment"
-                android:inputType="textShortMessage|textMultiLine"
-                android:minHeight="0dp"
-                android:textSize="20sp"
-                tools:text="@tools:sample/lorem[170]" />
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:paddingHorizontal="15dp"
+                android:text="Your order has been placed.\nIn the meantime you can edit it!" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/order_info_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp">
+
+            <TextView
+                android:id="@+id/newOrder__pickles_label"
+                style="@style/new_order_screen_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/picklesNumberLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <SeekBar
+                android:id="@+id/newOrder__pickles_seekbar"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="10"
+                android:progress="3"
+                android:progressTint="#68A63C"
+                android:thumb="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/newOrder__pickles_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/newOrder__pickles_label"
+                app:layout_constraintTop_toTopOf="@+id/newOrder__pickles_label" />
 
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/newOrder__hummus_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/layout_border"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@id/newOrder__tahini_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/newOrder__pickles_label">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/newOrder__hummus_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/newOrder__hummus_label"
+                    style="@style/new_order_screen_text_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hummus"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/newOrder__tahini_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/layout_border"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/newOrder__hummus_layout"
+                app:layout_constraintTop_toBottomOf="@+id/newOrder__pickles_label">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/newOrder__tahini_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/newOrder__tahini_label"
+                    style="@style/new_order_screen_text_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tahini"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-<!--        <androidx.constraintlayout.widget.Guideline-->
-<!--            android:id="@+id/newOrder__Start"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical"-->
-<!--            app:layout_constraintGuide_begin="26dp" />-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="100sp"
+                android:layout_marginTop="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/newOrder__hummus_layout">
 
-<!--        <androidx.constraintlayout.widget.Guideline-->
-<!--            android:id="@+id/newOrder__End"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical"-->
-<!--            app:layout_constraintGuide_end="26dp" />-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/newOrder__comment_text_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:hint="Comment"
+                    android:inputType="textShortMessage|textMultiLine"
+                    android:minHeight="0dp"
+                    android:textSize="20sp"
+                    tools:text="@tools:sample/lorem[170]" />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/newOrder__submit_button"
@@ -181,68 +216,33 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/teal_blue"
             android:text="Make New Order"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            app:layout_constraintStart_toStartOf="@id/newOrder__Start" />
+            android:visibility="gone" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/edit_order_screen"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/editOrder__header"
-            style="@style/new_order_screen_text_style"
+        <LinearLayout
+            android:id="@+id/edit_order_screen_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Edit Your Order"
-            android:textSize="34sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:gravity="center|top">
 
-        <TextView
-            android:id="@+id/editOrder__info"
-            style="@style/text_info_style"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:paddingHorizontal="15dp"
-            android:text="Your order has been placed.\nIn the meantime you can edit it!"
-            app:layout_constraintEnd_toEndOf="@id/editOrder__end"
-            app:layout_constraintStart_toStartOf="@id/editOrder__start"
-            app:layout_constraintTop_toBottomOf="@+id/editOrder__header" />
+            <Button
+                android:id="@+id/editOrder__submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/teal_blue"
+                android:text="Save Changes" />
 
+            <Button
+                android:id="@+id/editOrder__delete_order"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#8F1812"
+                android:text="Delete Order" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/editOrder__start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="20dp" />
+        </LinearLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/editOrder__end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="20dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    </LinearLayout>
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
