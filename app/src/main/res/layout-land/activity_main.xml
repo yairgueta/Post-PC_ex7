@@ -15,14 +15,12 @@
         android:id="@+id/add_new_order_screen"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <TextView
@@ -51,11 +49,11 @@
             app:layout_constraintTop_toBottomOf="@id/newOrder__header">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:inputType="textPersonName"
                 android:id="@+id/newOrder__customer_name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/CustomerNameField" />
+                android:hint="@string/CustomerNameField"
+                android:inputType="textPersonName" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -184,12 +182,12 @@
             android:id="@+id/newOrder__submit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/teal_blue"
             android:text="Make New Order"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/newOrder__Start"
             app:layout_constraintEnd_toEndOf="@id/newOrder__End"
-            android:backgroundTint="@color/teal_blue"
-            />
+            app:layout_constraintStart_toStartOf="@id/newOrder__Start" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
