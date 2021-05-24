@@ -14,6 +14,21 @@ class OrderManager (orderItem: OrderItem) {
     private val orderItemDocument : DocumentReference = ordersDB.document(orderItem.id)
     private val registrationObjects : MutableList<ListenerRegistration> = mutableListOf()
 
+    var picklesNum: Int
+        get() = _orderItem.picklesNum
+        set(value) { _orderItem.picklesNum = value }
+
+    var hummusFlag: Boolean
+        get() = _orderItem.hummusFlag
+        set(value) { _orderItem.hummusFlag = value }
+
+    var tahiniFlag: Boolean
+        get() = _orderItem.tahiniFlag
+        set(value) { _orderItem.tahiniFlag = value }
+
+    var comment: String
+        get() = _orderItem.comment ?: ""
+        set(value) { _orderItem.comment = value}
 
     fun uploadToDB() : Task<Void> {
         return orderItemDocument.set(this._orderItem)
@@ -31,23 +46,24 @@ class OrderManager (orderItem: OrderItem) {
         registrationObjects += regObj
     }
 
-    fun changePicklesAmount(amount: Int) : Task<Void> {
+
+    fun changePicklesAmountInDB(amount: Int) : Task<Void> {
         if (amount < 0 || amount > 10)
             throw IllegalArgumentException("$amount amount of pickles is invalid, Pickles amount must be in [0,10]")
         return orderItemDocument.update(PICKLES_NUM, amount).addOnSuccessListener { _orderItem.picklesNum = amount }
     }
 
-    fun changeHummusFlag(hummusFlag: Boolean) : Task<Void>? {
+    fun changeHummusFlagInDB(hummusFlag: Boolean) : Task<Void>? {
         if (_orderItem.hummusFlag == hummusFlag) return null
         return orderItemDocument.update(HUMMUS_FLAG, hummusFlag).addOnSuccessListener { _orderItem.hummusFlag = hummusFlag }
     }
 
-    fun changeTahiniFlag(tahiniFlag: Boolean) : Task<Void>? {
+    fun changeTahiniFlagInDB(tahiniFlag: Boolean) : Task<Void>? {
         if (_orderItem.tahiniFlag == tahiniFlag) return null
         return orderItemDocument.update(TAHINI_FLAG, tahiniFlag).addOnSuccessListener { _orderItem.tahiniFlag = tahiniFlag }
     }
 
-    fun changeComment(comment: String) : Task<Void> {
+    fun changeCommentInDB(comment: String) : Task<Void> {
         return orderItemDocument.update(ORDER_COMMENT, comment).addOnSuccessListener { _orderItem.comment = comment }
     }
 

@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
 import java.lang.IllegalArgumentException
 
@@ -19,15 +20,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var newOrderScreen: NewOrderScreen
     private lateinit var editOrderScreen: EditOrderScreen
 
+    private lateinit var loadingBar: ProgressBar
+
     var currentOrderManager : OrderManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sandwichInfoLayout = SandwichInfoLayout(this)
-        newOrderScreen = NewOrderScreen(this)
-        editOrderScreen = EditOrderScreen(this)
+        sandwichInfoLayout = SandwichInfoLayout(this).apply { dismiss() }
+        newOrderScreen = NewOrderScreen(this).apply { dismiss() }
+        currentDisplayingScreen = newOrderScreen
+        editOrderScreen = EditOrderScreen(this).apply { dismiss() }
+
+        loadingBar = findViewById<ProgressBar>(R.id.progressBar).apply { visibility = View.GONE}
 
         if (currentOrderManager == null){
             currentOrderManager = collectExistingOrder("0")
@@ -37,34 +43,61 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        newOrderScreen.setOnSubmitListener {
-            createNewOrder()
-            showEditOrderScreen()
-        }
+        newOrderScreen.setOnSubmitListener { createNewOrder() }
 
         editOrderScreen.also {
-            it.setOnSubmit{
-
-            }
-
-            it.setOnDelete{
-
-            }
+            it.setOnSubmit{ updateOrder() }
+            it.setOnDelete{ deleteOrder() }
         }
     }
 
     fun createNewOrder(){
         try {
+            loadingBar.visibility = View.VISIBLE
+
+
             currentOrderManager = with(sandwichInfoLayout) {
                 createNewOrder(newOrderScreen.nameInput, picklesNumber, hummusFlag, tahiniFlag, comment)
             }.also {
-                it.uploadToDB()
                 it.registerToStateChange { state -> onOrderStateChange(state) }
+                it.uploadToDB()
+                    .addOnSuccessListener { showEditOrderScreen(); loadingBar.visibility = View.GONE }
+                    .addOnFailureListener {
+                        loadingBar.visibility = View.GONE
+                        currentOrderManager = null
+                        makeToast("Couldn't create new order. Try again later")
+                    }
             }
         }catch (e: IllegalArgumentException){
-            println("HERERERREE")
             makeToast(e.message ?: "Couldn't create new order. Check your input!")
         }
+    }
+
+    fun updateOrder() {
+        loadingBar.visibility = View.VISIBLE
+        editOrderScreen.areButtonsEnabled = false
+
+        currentOrderManager!!.apply {
+            picklesNum = sandwichInfoLayout.picklesNumber
+            tahiniFlag = sandwichInfoLayout.tahiniFlag
+            hummusFlag = sandwichInfoLayout.hummusFlag
+            comment = sandwichInfoLayout.comment
+        }.also {
+            it.uploadToDB().addOnCompleteListener {
+                loadingBar.visibility = View.GONE
+                editOrderScreen.areButtonsEnabled = true
+                makeToast("Order has updated!")
+            }.addOnFailureListener {
+                makeToast("There was an error updating the order.\nTry again later...")
+            }
+        }
+    }
+
+    fun deleteOrder() {
+        currentOrderManager?.unregisterAll()
+        currentOrderManager?.deleteOrder()
+        currentOrderManager = null
+        showNewOrderScreen()
     }
 
     private fun onOrderStateChange(state: String){
@@ -179,6 +212,10 @@ class NewOrderScreen (activity: MainActivity) : Screen {
     private val nameTextInput : TextInputEditText = activity.findViewById(R.id.newOrder__customer_name_edit_text)
     private val submitButton : View = activity.findViewById(R.id.newOrder__submit_button)
 
+    var isSubmitEnabled: Boolean
+        get() = submitButton.isEnabled
+        set(value) { submitButton.isEnabled = value }
+
     fun setOnSubmitListener(onClick: View.OnClickListener) {
         submitButton.setOnClickListener(onClick)
     }
@@ -212,6 +249,13 @@ class EditOrderScreen (activity: MainActivity) : Screen {
     fun setOnDelete(l: View.OnClickListener) {
         deleteButton.setOnClickListener(l)
     }
+
+    var areButtonsEnabled : Boolean
+        get() = submitButton.isEnabled && deleteButton.isEnabled
+        set(value) {
+            submitButton.isEnabled = value
+            deleteButton.isEnabled = value
+        }
 
     override fun show() {
         topLayout.visibility = View.VISIBLE
