@@ -7,9 +7,20 @@
     </style>
 
     <style name="text_info_style">
-        <item name="android:fontFamily">@font/acme</item>
+        <item name="android:fontFamily">@font/comfortaa_bold</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="order_list_items_style">
+        <item name="android:fontFamily">@font/comfortaa_bold</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_marginStart">25dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginVertical">3dp</item>
+        <item name="android:background">#22000000</item>
     </style>
 
 </resources>

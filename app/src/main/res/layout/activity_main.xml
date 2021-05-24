@@ -74,7 +74,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="top|center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/editOrder__header"
@@ -101,7 +102,8 @@
             android:id="@+id/order_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp">
+            android:layout_marginHorizontal="24dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/newOrder__pickles_label"
@@ -222,7 +224,8 @@
             android:id="@+id/edit_order_screen_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center|top">
+            android:gravity="center|top"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/editOrder__submit"
@@ -245,7 +248,86 @@
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/inprogress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/new_order_screen_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Your Order is in progress!"
+                android:textAlignment="center"
+                android:textSize="40sp" />
+
+            <TextView
+                android:id="@+id/inProgress__thanku_message"
+                style="@style/text_info_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/thanku_message"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/inProgress__pickles_li"
+                style="@style/order_list_items_style"
+                android:text="X pickles" />
+
+            <TextView
+                android:id="@+id/inProgress__hummus_li"
+                style="@style/order_list_items_style"
+                android:text="With hummus" />
+
+            <TextView
+                android:id="@+id/inProgress__tahini_li"
+                style="@style/order_list_items_style"
+                android:text="Without tahini" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/order_ready_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center|top"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/new_order_screen_text_style"
+                android:text="Your order is ready!"
+                android:textSize="36sp"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/text_info_style"
+                android:layout_marginTop="17dp"
+                android:textSize="20sp"
+                android:text="Rachel is in campus with your Sandwich!\nYou can pick it up from her.\nOnce You pick up your sandwich, click on the button bellow."
+                />
+            <Button
+                android:id="@+id/orderReady__button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Got It!"
+                android:layout_marginTop="25dp"
+                android:backgroundTint="@color/teal_blue"
+                />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

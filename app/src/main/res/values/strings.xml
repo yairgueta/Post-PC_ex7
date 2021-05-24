@@ -2,4 +2,19 @@
     <string name="app_name">Rachel\'s Sandwiches</string>
     <string name="CustomerNameField">Name</string>
     <string name="picklesNumberLabel">Pickles:</string>
+    <string name="thanku_message">Dear %1$s, thank you for ordering!<br/>Your order contains the following:</string>
+
+    <plurals name="pickles_num_plural">
+        <item quantity="zero">None pickles</item>
+        <item quantity="one">One pickle</item>
+        <item quantity="other">%1$d pickles</item>
+    </plurals>
+    <plurals name="hummus_plural">
+        <item quantity="zero">Without hummus</item>
+        <item quantity="one">With hummus</item>
+    </plurals>
+    <plurals name="tahini_plural">
+        <item quantity="zero">Without tahini</item>
+        <item quantity="one">With tahini</item>
+    </plurals>
 </resources>

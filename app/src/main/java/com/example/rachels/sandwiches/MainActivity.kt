@@ -9,7 +9,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
 import java.lang.IllegalArgumentException
 
@@ -19,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sandwichInfoLayout: SandwichInfoLayout
     private lateinit var newOrderScreen: NewOrderScreen
     private lateinit var editOrderScreen: EditOrderScreen
+    private lateinit var inProgressScreen: InProgressScreen
+    private lateinit var readyScreen: ReadyScreen
 
     private lateinit var loadingBar: ProgressBar
 
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
         newOrderScreen = NewOrderScreen(this).apply { dismiss() }
         currentDisplayingScreen = newOrderScreen
         editOrderScreen = EditOrderScreen(this).apply { dismiss() }
+        inProgressScreen = InProgressScreen(this).apply { dismiss() }
+        readyScreen = ReadyScreen(this).apply { dismiss() }
 
         loadingBar = findViewById<ProgressBar>(R.id.progressBar).apply { visibility = View.GONE}
 
@@ -40,6 +43,8 @@ class MainActivity : AppCompatActivity() {
         }
         if (currentOrderManager == null){
             showNewOrderScreen()
+        }else{
+            
         }
 
 
@@ -49,6 +54,8 @@ class MainActivity : AppCompatActivity() {
             it.setOnSubmit{ updateOrder() }
             it.setOnDelete{ deleteOrder() }
         }
+
+        readyScreen.setOnClick { showNewOrderScreen() }
     }
 
     fun createNewOrder(){
@@ -137,10 +144,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showInProgressScreen() {
+        inProgressScreen.apply {
+            setThankUName(currentOrderManager?.name ?: "Stranger")
+            picklesNum = currentOrderManager?.picklesNum ?: 0
+            hummusFlag = currentOrderManager?.hummusFlag ?: false
+            tahiniFlag = currentOrderManager?.tahiniFlag ?: false
+        }
+
         currentDisplayingScreen.dismiss()
         sandwichInfoLayout.dismiss()
 
-
+        inProgressScreen.show()
+        currentDisplayingScreen = inProgressScreen
 
     }
 
@@ -148,7 +163,8 @@ class MainActivity : AppCompatActivity() {
         currentDisplayingScreen.dismiss()
         sandwichInfoLayout.dismiss()
 
-
+        readyScreen.show()
+        currentDisplayingScreen = readyScreen
     }
 
     private fun makeToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -267,4 +283,62 @@ class EditOrderScreen (activity: MainActivity) : Screen {
         bottomLayout.visibility = View.GONE
     }
 }
+
+class InProgressScreen (private val activity: MainActivity) : Screen {
+    private val layout: LinearLayout = activity.findViewById(R.id.inprogress_layout)
+    private val thankuTextView: TextView = activity.findViewById(R.id.inProgress__thanku_message)
+    private val picklesTextView: TextView = activity.findViewById(R.id.inProgress__pickles_li)
+    private val hummusTextView: TextView = activity.findViewById(R.id.inProgress__hummus_li)
+    private val tahiniTextView: TextView = activity.findViewById(R.id.inProgress__tahini_li)
+
+    var picklesNum: Int = 0
+        set(value) { picklesTextView.text = activity.resources.getQuantityString(R.plurals.pickles_num_plural, value, value) }
+
+    var hummusFlag: Boolean = false
+        set(value) {
+            hummusTextView.text = when(value){
+                true -> activity.resources.getQuantityString(R.plurals.hummus_plural, 0, 0)
+                false -> activity.resources.getQuantityString(R.plurals.hummus_plural, 1, 1)
+            }
+        }
+
+    var tahiniFlag: Boolean = false
+        set(value) {
+            tahiniTextView.text = when(value){
+                true -> activity.resources.getQuantityString(R.plurals.tahini_plural, 0, 0)
+                false -> activity.resources.getQuantityString(R.plurals.tahini_plural, 1, 1)
+            }
+        }
+
+    fun setThankUName(name: String){
+        thankuTextView.text = activity.resources.getString(R.string.thanku_message, name)
+    }
+
+    override fun show() {
+        layout.visibility = View.VISIBLE
+    }
+
+    override fun dismiss() {
+        layout.visibility = View.GONE
+    }
+
+}
+
+class ReadyScreen (activity: MainActivity) : Screen {
+    private val layout: LinearLayout = activity.findViewById(R.id.order_ready_layout)
+    private val button: Button = activity.findViewById(R.id.orderReady__button)
+
+    fun setOnClick(l: View.OnClickListener) {
+        button.setOnClickListener(l)
+    }
+
+    override fun show() {
+        layout.visibility = View.VISIBLE
+    }
+
+    override fun dismiss() {
+        layout.visibility = View.GONE
+    }
+}
+
 const val TAG = "DEBUG_TAG"

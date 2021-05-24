@@ -14,6 +14,9 @@ class OrderManager (orderItem: OrderItem) {
     private val orderItemDocument : DocumentReference = ordersDB.document(orderItem.id)
     private val registrationObjects : MutableList<ListenerRegistration> = mutableListOf()
 
+    val name: String
+        get() = _orderItem.customerName.toString()
+
     var picklesNum: Int
         get() = _orderItem.picklesNum
         set(value) { _orderItem.picklesNum = value }
