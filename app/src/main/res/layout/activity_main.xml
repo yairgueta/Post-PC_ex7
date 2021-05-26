@@ -303,6 +303,7 @@
                 android:layout_marginTop="10dp"
                 />
             <TextView
+                android:layout_marginHorizontal="30dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/text_info_style"
