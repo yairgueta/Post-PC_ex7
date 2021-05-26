@@ -1,5 +1,7 @@
 package com.example.rachels.sandwiches
 
+import java.io.Serializable
+
 
 const val WAITING = "waiting"
 const val IN_PROGRESS = "in-progress"
@@ -21,4 +23,4 @@ data class OrderItem(
     var hummusFlag: Boolean = false,
     var tahiniFlag: Boolean = false,
     var comment: String? = null,
-    var status: String = WAITING)
+    var status: String = WAITING) : Serializable

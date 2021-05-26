@@ -1,18 +1,34 @@
 package com.example.rachels.sandwiches
 
+import android.util.Log
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.lang.IllegalArgumentException
 import java.util.*
 
 class OrderManager (orderItem: OrderItem) {
-
     private val _orderItem: OrderItem = orderItem
     private val orderItemDocument : DocumentReference = ordersDB.document(orderItem.id)
     private val registrationObjects : MutableList<ListenerRegistration> = mutableListOf()
+
+    val orderItem: OrderItem
+        get() = _orderItem.copy()
+
+    val id: String
+        get() = _orderItem.id
+
+    val status: String
+        get() = _orderItem.status
 
     val name: String
         get() = _orderItem.customerName.toString()
@@ -79,6 +95,11 @@ class OrderManager (orderItem: OrderItem) {
         unregisterAll()
         return orderItemDocument.delete()
     }
+
+    fun setDone(): Task<Void> {
+        _orderItem.status = DONE
+        return uploadToDB()
+    }
 }
 
 val ordersDB = Firebase.firestore.collection("orders")
@@ -106,7 +127,22 @@ fun createNewOrder (
     return OrderManager(orderItem)
 }
 
-fun collectExistingOrder(id: String) : OrderManager?{
-//    val s = OrderManager();
-    return null
+fun collectFromExistingOrder(orderItem: OrderItem) : OrderManager {
+    return OrderManager(orderItem)
+}
+
+suspend fun collectFromExistingOrderID(id: String) : OrderManager? {
+    var orderItem: OrderItem? = null
+    orderItem = ordersDB.document(id).get().await()?.toObject<OrderItem>()
+    return orderItem?.let { OrderManager(it) }
+
+    /**
+    return GlobalScope.launch {
+    var orderItem: OrderItem? = null
+    orderItem = ordersDB.document(id).get().await()?.toObject<OrderItem>()
+    Log.d(TAG, "$orderItem $id")
+    Log.d(TAG, "$orderItem $id")
+    return@launch orderItem?.let { OrderManager(it) }
+    }
+     */
 }

@@ -1,18 +1,29 @@
 package com.example.rachels.sandwiches
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
 class MainActivity : AppCompatActivity() {
+    private val KEY_BUNDLE_ORDER_ITEM = "com.example.rachels.sandwiches.KEY_BUNDLE_ORDER_ITEM"
+    private val PREFERENCE_KEY = "com.example.rachels.sandwiches.PREFERENCE_FILE_KEY"
+    private val KEY_SP_ORDER_ID = "com.example.rachles.sandwiches.SP_ORDER_ITEM_ID_KEY"
+    private val KEY_SP_PREVIUOS_USER_NAME = "com.example.rachles.sandwiches.KEY_SP_PREVIUOS_USER_NAME"
+
+    private lateinit var sharedPref: SharedPreferences
 
     private lateinit var currentDisplayingScreen: Screen
     private lateinit var sandwichInfoLayout: SandwichInfoLayout
@@ -23,60 +34,93 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var loadingBar: ProgressBar
 
-    var currentOrderManager : OrderManager? = null
+    var currentOrderManager : OrderManager? = null  // Exposed for tests purposes...
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        sharedPref = getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
+
         sandwichInfoLayout = SandwichInfoLayout(this).apply { dismiss() }
-        newOrderScreen = NewOrderScreen(this).apply { dismiss() }
+        newOrderScreen = NewOrderScreen(this, ::savePreferredName).apply { dismiss() }
         currentDisplayingScreen = newOrderScreen
         editOrderScreen = EditOrderScreen(this).apply { dismiss() }
         inProgressScreen = InProgressScreen(this).apply { dismiss() }
         readyScreen = ReadyScreen(this).apply { dismiss() }
-
         loadingBar = findViewById<ProgressBar>(R.id.progressBar).apply { visibility = View.GONE}
 
-        if (currentOrderManager == null){
-            currentOrderManager = collectExistingOrder("0")
-        }
-        if (currentOrderManager == null){
-            showNewOrderScreen()
-        }else{
-            
-        }
-
-
         newOrderScreen.setOnSubmitListener { createNewOrder() }
-
         editOrderScreen.also {
             it.setOnSubmit{ updateOrder() }
             it.setOnDelete{ deleteOrder() }
         }
 
-        readyScreen.setOnClick { showNewOrderScreen() }
+        readyScreen.setOnClick {
+            loadingBar.visibility = View.VISIBLE
+            currentOrderManager?.setDone()
+                ?.addOnSuccessListener {
+                    loadingBar.visibility = View.GONE
+                    showNewOrderScreen()
+                }
+        }
+
+        loadOrCreateOrderManager(savedInstanceState)
+    }
+
+    private fun loadOrCreateOrderManager(savedInstanceState: Bundle?) {
+        loadingBar.visibility = View.VISIBLE
+        if (currentOrderManager == null) {
+            // Try to get manager from instance bundle
+            val orderItem = savedInstanceState?.getSerializable(KEY_BUNDLE_ORDER_ITEM) as? OrderItem
+            if (orderItem != null) {
+                currentOrderManager = collectFromExistingOrder(orderItem)
+                    .apply { registerToStateChange(::onOrderStateChange) }
+            }
+        }
+        if (currentOrderManager == null) {
+            // Try to get manager from the hard drive
+            GlobalScope.launch {
+                val id = sharedPref.getString(KEY_SP_ORDER_ID, null)
+                currentOrderManager = id?.let{ collectFromExistingOrderID(id) }
+                    ?.apply { registerToStateChange(::onOrderStateChange) }
+                runOnUiThread {
+                    loadingBar.visibility = View.GONE
+                    if (currentOrderManager == null) {
+                        showNewOrderScreen()
+                    } else {
+                        onOrderStateChange(currentOrderManager!!.status)
+                    }
+                }
+            }
+        }
     }
 
     fun createNewOrder(){
         try {
             loadingBar.visibility = View.VISIBLE
-
-
+            newOrderScreen.isSubmitEnabled = false
             currentOrderManager = with(sandwichInfoLayout) {
                 createNewOrder(newOrderScreen.nameInput, picklesNumber, hummusFlag, tahiniFlag, comment)
             }.also {
                 it.registerToStateChange { state -> onOrderStateChange(state) }
                 it.uploadToDB()
-                    .addOnSuccessListener { showEditOrderScreen(); loadingBar.visibility = View.GONE }
+                    .addOnSuccessListener {
+                        showEditOrderScreen()
+                        loadingBar.visibility = View.GONE
+                        newOrderScreen.isSubmitEnabled = true
+                    }
                     .addOnFailureListener {
                         loadingBar.visibility = View.GONE
+                        newOrderScreen.isSubmitEnabled = true
                         currentOrderManager = null
                         makeToast("Couldn't create new order. Try again later")
                     }
             }
         }catch (e: IllegalArgumentException){
             makeToast(e.message ?: "Couldn't create new order. Check your input!")
+            loadingBar.visibility = View.GONE
+            newOrderScreen.isSubmitEnabled = true
         }
     }
 
@@ -109,19 +153,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun onOrderStateChange(state: String){
         when (state){
-            WAITING -> {
-                showEditOrderScreen()
-            }
-            IN_PROGRESS -> {
-                showInProgressScreen()
-            }
-            READY -> {
-                showReadyScreen()
-            }
-            DONE -> {
-                showNewOrderScreen()
-            }
-
+            WAITING -> showEditOrderScreen()
+            IN_PROGRESS -> showInProgressScreen()
+            READY -> showReadyScreen()
+            DONE -> showNewOrderScreen()
         }
     }
 
@@ -129,7 +164,10 @@ class MainActivity : AppCompatActivity() {
         currentDisplayingScreen.dismiss()
 
         newOrderScreen.show()
+        newOrderScreen.nameInput = sharedPref.getString(KEY_SP_PREVIUOS_USER_NAME, "") ?: ""
+
         sandwichInfoLayout.show()
+        sandwichInfoLayout.reset()
 
         currentDisplayingScreen = newOrderScreen
     }
@@ -139,6 +177,12 @@ class MainActivity : AppCompatActivity() {
 
         editOrderScreen.show()
         sandwichInfoLayout.show()
+        with(sandwichInfoLayout) {
+            comment = currentOrderManager!!.comment
+            picklesNumber = currentOrderManager!!.picklesNum
+            hummusFlag = currentOrderManager!!.hummusFlag
+            tahiniFlag = currentOrderManager!!.tahiniFlag
+        }
 
         currentDisplayingScreen = editOrderScreen
     }
@@ -183,6 +227,25 @@ class MainActivity : AppCompatActivity() {
         }
         return super.dispatchTouchEvent(ev)
     }
+
+    override fun onPause() {
+        super.onPause()
+        with(sharedPref.edit()) {
+            putString(KEY_SP_ORDER_ID, currentOrderManager?.id)
+            apply()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (currentOrderManager != null){
+            outState.putSerializable(KEY_BUNDLE_ORDER_ITEM, currentOrderManager?.orderItem)
+        }
+    }
+
+    private fun savePreferredName(name: String){
+        sharedPref.edit().putString(KEY_SP_PREVIUOS_USER_NAME, name).apply()
+    }
 }
 
 interface Screen {
@@ -209,8 +272,9 @@ class SandwichInfoLayout(activity: MainActivity) : Screen {
         get() = tahiniSwitch.isChecked
         set(value) { tahiniSwitch.isChecked = value }
 
-    val comment: String
+    var comment: String
         get() = commentInput.text.toString()
+        set(value) = commentInput.setText(value)
 
     fun clearComment() =  commentInput.text?.clear()
 
@@ -221,12 +285,23 @@ class SandwichInfoLayout(activity: MainActivity) : Screen {
     override fun dismiss() {
         layout.visibility = View.GONE
     }
+
+    fun reset() {
+        picklesNumber = 3
+        hummusFlag = false
+        tahiniFlag = false
+        clearComment()
+    }
 }
 
-class NewOrderScreen (activity: MainActivity) : Screen {
+class NewOrderScreen (activity: MainActivity, val onNameChange: (String)->Unit) : Screen {
     private val topLayout: LinearLayout = activity.findViewById(R.id.add_new_order_screen_top)
     private val nameTextInput : TextInputEditText = activity.findViewById(R.id.newOrder__customer_name_edit_text)
     private val submitButton : View = activity.findViewById(R.id.newOrder__submit_button)
+
+    init {
+        nameTextInput.addTextChangedListener { watcher -> onNameChange(nameInput) }
+    }
 
     var isSubmitEnabled: Boolean
         get() = submitButton.isEnabled
@@ -238,7 +313,10 @@ class NewOrderScreen (activity: MainActivity) : Screen {
 
     var nameInput: String
         get() = nameTextInput.text.toString()
-        set(value) = nameTextInput.setText(value)
+        set(value) {
+            onNameChange(value)
+            nameTextInput.setText(value)
+        }
 
 
     override fun show() {
@@ -295,20 +373,11 @@ class InProgressScreen (private val activity: MainActivity) : Screen {
         set(value) { picklesTextView.text = activity.resources.getQuantityString(R.plurals.pickles_num_plural, value, value) }
 
     var hummusFlag: Boolean = false
-        set(value) {
-            hummusTextView.text = when(value){
-                true -> activity.resources.getQuantityString(R.plurals.hummus_plural, 0, 0)
-                false -> activity.resources.getQuantityString(R.plurals.hummus_plural, 1, 1)
-            }
-        }
+        set(value) { hummusTextView.text = activity.getString(if (value) R.string.with_hummus else R.string.no_hummus) }
 
     var tahiniFlag: Boolean = false
-        set(value) {
-            tahiniTextView.text = when(value){
-                true -> activity.resources.getQuantityString(R.plurals.tahini_plural, 0, 0)
-                false -> activity.resources.getQuantityString(R.plurals.tahini_plural, 1, 1)
-            }
-        }
+        set(value) { tahiniTextView.text = activity.getString(if (value) R.string.with_tahini else R.string.no_tahini) }
+
 
     fun setThankUName(name: String){
         thankuTextView.text = activity.resources.getString(R.string.thanku_message, name)
