@@ -1,24 +1,19 @@
 package com.example.rachels.sandwiches
 
-import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.lang.IllegalArgumentException
 import java.util.*
 
-class OrderManager (orderItem: OrderItem) {
+/** Do not call this class constructor. Instead call one of the global creators functions in the end. */
+class OrderManager (orderItem: OrderItem, _orderItemDocument: DocumentReference? = null) {
     private val _orderItem: OrderItem = orderItem
-    private val orderItemDocument : DocumentReference = ordersDB.document(orderItem.id)
+    private val orderItemDocument : DocumentReference = _orderItemDocument?: Firebase.firestore.collection(ORDERS_DB_NAME).document(orderItem.id)
     private val registrationObjects : MutableList<ListenerRegistration> = mutableListOf()
 
     val orderItem: OrderItem
@@ -31,7 +26,7 @@ class OrderManager (orderItem: OrderItem) {
         get() = _orderItem.status
 
     val name: String
-        get() = _orderItem.customerName.toString()
+        get() = _orderItem.customerName
 
     var picklesNum: Int
         get() = _orderItem.picklesNum
@@ -46,7 +41,7 @@ class OrderManager (orderItem: OrderItem) {
         set(value) { _orderItem.tahiniFlag = value }
 
     var comment: String
-        get() = _orderItem.comment ?: ""
+        get() = _orderItem.comment
         set(value) { _orderItem.comment = value}
 
     fun uploadToDB() : Task<Void> {
@@ -102,15 +97,17 @@ class OrderManager (orderItem: OrderItem) {
     }
 }
 
-val ordersDB = Firebase.firestore.collection("orders")
+val ORDERS_DB_NAME = "orders"
 
-fun createNewOrder (
+/**
+ * Exposed for tests purposes.
+ */
+fun _validateOrder(
     customerName: String,
     picklesNum: Int,
     hummusFlag: Boolean,
     tahiniFlag: Boolean,
-    comment: String = "") : OrderManager{
-
+    comment: String = "") {
     if (customerName.isBlank()){
         throw IllegalArgumentException("Please fill your name!")
     }
@@ -120,6 +117,19 @@ fun createNewOrder (
     if (picklesNum < 0 || picklesNum > 10){
         throw IllegalArgumentException("Pickles number must be between 0 and 10")
     }
+}
+
+/**
+ * Creates new order and generates an ID for it.
+ */
+fun createNewOrder (
+    customerName: String,
+    picklesNum: Int,
+    hummusFlag: Boolean,
+    tahiniFlag: Boolean,
+    comment: String = "") : OrderManager{
+
+    _validateOrder(customerName, picklesNum, hummusFlag, tahiniFlag, comment)
 
     val id = UUID.randomUUID().toString();
     val orderItem = OrderItem(id, customerName, picklesNum, hummusFlag, tahiniFlag, comment, WAITING)
@@ -127,22 +137,20 @@ fun createNewOrder (
     return OrderManager(orderItem)
 }
 
+/**
+ * Create manager from an existing order item.
+ */
 fun collectFromExistingOrder(orderItem: OrderItem) : OrderManager {
     return OrderManager(orderItem)
 }
 
+/**
+ * Creates manager from existing order when you have only order ID.
+ * Searches for the order item in the database and therefore this function marked as suspend
+ * (which awaits for the getting method to finish). Id no valid order item found, returns null.
+ */
 suspend fun collectFromExistingOrderID(id: String) : OrderManager? {
     var orderItem: OrderItem? = null
-    orderItem = ordersDB.document(id).get().await()?.toObject<OrderItem>()
+    orderItem = Firebase.firestore.collection(ORDERS_DB_NAME).document(id).get().await()?.toObject<OrderItem>()
     return orderItem?.let { OrderManager(it) }
-
-    /**
-    return GlobalScope.launch {
-    var orderItem: OrderItem? = null
-    orderItem = ordersDB.document(id).get().await()?.toObject<OrderItem>()
-    Log.d(TAG, "$orderItem $id")
-    Log.d(TAG, "$orderItem $id")
-    return@launch orderItem?.let { OrderManager(it) }
-    }
-     */
 }

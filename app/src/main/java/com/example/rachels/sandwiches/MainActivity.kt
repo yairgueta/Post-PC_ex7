@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                 ?.addOnSuccessListener {
                     loadingBar.visibility = View.GONE
                     showNewOrderScreen()
+                    sandwichInfoLayout.reset()
                 }
         }
 
@@ -70,14 +71,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadOrCreateOrderManager(savedInstanceState: Bundle?) {
         loadingBar.visibility = View.VISIBLE
-        if (currentOrderManager == null) {
+        if (currentOrderManager != null) {
+            loadingBar.visibility = View.GONE
+        }
+
+        if (currentOrderManager == null && savedInstanceState?.containsKey(KEY_BUNDLE_ORDER_ITEM) == true) {
             // Try to get manager from instance bundle
-            val orderItem = savedInstanceState?.getSerializable(KEY_BUNDLE_ORDER_ITEM) as? OrderItem
+            loadingBar.visibility = View.GONE
+            val orderItem = savedInstanceState.getSerializable(KEY_BUNDLE_ORDER_ITEM) as? OrderItem
             if (orderItem != null) {
                 currentOrderManager = collectFromExistingOrder(orderItem)
                     .apply { registerToStateChange(::onOrderStateChange) }
+                onOrderStateChange(currentOrderManager!!.status)
+            } else {
+                showNewOrderScreen()
             }
+            return
         }
+
         if (currentOrderManager == null) {
             // Try to get manager from the hard drive
             GlobalScope.launch {
@@ -88,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                     loadingBar.visibility = View.GONE
                     if (currentOrderManager == null) {
                         showNewOrderScreen()
+                        sandwichInfoLayout.reset()
                     } else {
                         onOrderStateChange(currentOrderManager!!.status)
                     }
@@ -96,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun createNewOrder(){
+    private fun createNewOrder(){
         try {
             loadingBar.visibility = View.VISIBLE
             newOrderScreen.isSubmitEnabled = false
@@ -124,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateOrder() {
+    private fun updateOrder() {
         loadingBar.visibility = View.VISIBLE
         editOrderScreen.areButtonsEnabled = false
 
@@ -144,11 +156,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun deleteOrder() {
+    private fun deleteOrder() {
         currentOrderManager?.unregisterAll()
         currentOrderManager?.deleteOrder()
         currentOrderManager = null
         showNewOrderScreen()
+        sandwichInfoLayout.reset()
     }
 
     private fun onOrderStateChange(state: String){
@@ -156,7 +169,10 @@ class MainActivity : AppCompatActivity() {
             WAITING -> showEditOrderScreen()
             IN_PROGRESS -> showInProgressScreen()
             READY -> showReadyScreen()
-            DONE -> showNewOrderScreen()
+            DONE -> {
+                showNewOrderScreen()
+                sandwichInfoLayout.reset()
+            }
         }
     }
 
@@ -167,7 +183,6 @@ class MainActivity : AppCompatActivity() {
         newOrderScreen.nameInput = sharedPref.getString(KEY_SP_PREVIUOS_USER_NAME, "") ?: ""
 
         sandwichInfoLayout.show()
-        sandwichInfoLayout.reset()
 
         currentDisplayingScreen = newOrderScreen
     }
@@ -213,7 +228,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun makeToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
-
     override fun onDestroy() {
         super.onDestroy()
         currentOrderManager?.unregisterAll()
@@ -238,13 +252,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (currentOrderManager != null){
-            outState.putSerializable(KEY_BUNDLE_ORDER_ITEM, currentOrderManager?.orderItem)
-        }
+        outState.putSerializable(KEY_BUNDLE_ORDER_ITEM, currentOrderManager?.orderItem?:" ")
     }
 
     private fun savePreferredName(name: String){
+        Log.d(TAG,name)
         sharedPref.edit().putString(KEY_SP_PREVIUOS_USER_NAME, name).apply()
+        Log.d(TAG, sharedPref.getString(KEY_SP_PREVIUOS_USER_NAME, null)?:"NULL")
     }
 }
 

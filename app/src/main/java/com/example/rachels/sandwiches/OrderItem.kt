@@ -18,9 +18,9 @@ const val ORDER_STATUS = "status"
 
 data class OrderItem(
     val id: String = "",
-    val customerName: String? = null,
+    val customerName: String = "",
     var picklesNum: Int = 0,
     var hummusFlag: Boolean = false,
     var tahiniFlag: Boolean = false,
-    var comment: String? = null,
+    var comment: String = "",
     var status: String = WAITING) : Serializable
